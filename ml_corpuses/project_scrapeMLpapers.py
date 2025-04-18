@@ -140,28 +140,61 @@ for ii in range(len(list_ml_corpuses_noref)):
 ml_corpuses = pd.DataFrame(list_ml_corpuses)
 ml_corpuses_noref = pd.DataFrame(list_ml_corpuses_noref)
 
-
-
 # export to csv
-ml_corpuses.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/ml_corpuses.csv", index=False, encoding = "utf-8", errors = "replace")
-ml_corpuses_noref.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/ml_corpuses_noref.csv", index=False, encoding = "utf-8", errors = "replace")
+ml_corpuses.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses.csv", index=False, encoding = "utf-8", errors = "replace")
+ml_corpuses_noref.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses_noref.csv", index=False, encoding = "utf-8", errors = "replace")
 
 # =============================================================================
 # More modern ML texts (2024) -- to incorporate updates in tech, which moves @ 1e6 MPH 
 # =============================================================================
 
-# Different approach here: rather than summarizing all the word in-between, here
-# are snapshot summaries of key papers week by week, written by an expert in the field,
-# from 2023-present! (Apr 4 2025)
-# https://github.com/dair-ai/ML-Papers-of-the-Week/tree/main?tab=readme-ov-file#top-ml-papers-of-the-week-january-1---january-7---2024
+'''
+Second source:
+Different approach here: rather than summarizing all the word in-between, here are snapshot summaries 
+of key papers week by week, written by an expert in the field, from 2023-present! (Apr 4 2025)
+https://github.com/dair-ai/ML-Papers-of-the-Week
+'''
 
-list_ml_corpuses_noref[9]
+# Soupify URL
+my_url = "https://github.com/dair-ai/ML-Papers-of-the-Week"
+result = requests.get(my_url)
+src = result.content
+page_soup = soup(src, "lxml") # soup for full webpage
 
+# get text
+element = page_soup.find('body')
+text_content = element.get_text(separator=' ') #get_text with strip set to true
 
+# clean
+cleaned_text = text_content.split("\n")
+ct_bodies = list()
 
+# All paper summaries are labeled in the same way: " #)"
+import re
+# Regex pattern explanation:
+# \s  = a whitespace character
+# \d+ = one or more digits
+# /"  = literal / and "
+pattern = r'\s\d+/\"'
+# Search for the pattern
+for ii in cleaned_text:
+    if re.search(pattern, ii):  # length of smallest summary in the set on website(end of page: GPT4All)
+        ct_bodies.append(ii)
 
+# remove first element of list, it's not a relevant piece of text
+del ct_bodies[0]
 
+# remove strange symbols (non-ASCII
+cleaned_texts = [s.encode('ascii', 'ignore').decode() for s in ct_bodies]
 
+# replace all multi-spaces with single space
+cleaned_texts = [re.sub(r'\s+', ' ', s).strip() for s in cleaned_texts]
+
+# total number of short summaries: 722
+len(cleaned_texts)
+
+# export to csv
+cleaned_texts.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/ml_corpuses.csv", index=False, encoding = "utf-8", errors = "replace")
 
 # =============================================================================
 # 
