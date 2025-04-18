@@ -141,8 +141,8 @@ ml_corpuses = pd.DataFrame(list_ml_corpuses)
 ml_corpuses_noref = pd.DataFrame(list_ml_corpuses_noref)
 
 # export to csv
-ml_corpuses.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses.csv", index=False, encoding = "utf-8", errors = "replace")
-ml_corpuses_noref.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses_noref.csv", index=False, encoding = "utf-8", errors = "replace")
+ml_corpuses.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_corpuses.csv", index=False, encoding = "utf-8", errors = "replace")
+ml_corpuses_noref.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_corpuses_noref.csv", index=False, encoding = "utf-8", errors = "replace")
 
 # =============================================================================
 # More modern ML texts (2024) -- to incorporate updates in tech, which moves @ 1e6 MPH 
@@ -184,7 +184,7 @@ for ii in cleaned_text:
 # remove first element of list, it's not a relevant piece of text
 del ct_bodies[0]
 
-# remove strange symbols (non-ASCII
+# remove strange symbols (non-ASCII)
 cleaned_texts = [s.encode('ascii', 'ignore').decode() for s in ct_bodies]
 
 # replace all multi-spaces with single space
@@ -193,8 +193,15 @@ cleaned_texts = [re.sub(r'\s+', ' ', s).strip() for s in cleaned_texts]
 # total number of short summaries: 722
 len(cleaned_texts)
 
+# remove the numbering starts '#) '
+pattern = r'\d+\)\s'
+cleaned_texts1 = [re.sub(pattern, '', s) for s in cleaned_texts]
+
+# combine list to df
+ml_papersummaries = pd.DataFrame(cleaned_texts1)
+
 # export to csv
-cleaned_texts.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/ml_corpuses.csv", index=False, encoding = "utf-8", errors = "replace")
+ml_papersummaries.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_papersummaries.csv", index=False, encoding = "utf-8", errors = "replace")
 
 # =============================================================================
 # 
