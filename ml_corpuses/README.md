@@ -8,10 +8,12 @@ In analyses, I would propose that Set 1 & Set 2 should be used together.
 
 *In the future, I might throw another .py file in this folder where I do just that^^ i.e. merge the dataframes and rewrite that to a new csv.*
 
-### Set 1
+### Influential/Key papers up to 2016 (2012-2016)
+*List published by terryum on GitHub: https://github.com/terryum/awesome-deep-learning-papers?tab=readme-ov-file#natural-language-processing--rnns*
 - ml_corpuses.csv : Contains corpuses up to 2016 from a git page which had compiled key publications across different ML areas. 
 - ml_corpuses_noref.csv : Contains the same corpuses as ml_corpuses.csv, but here they have been cleaned to remove all text which appears after the token (string) "References" -- that is, to exclude Reference lists at the end of the publication (since that is not substantive content within the paper). Note that these corpuses *include* the word "References" itself.
 
-### Set 2
+### Most influential papers of 2024
+
 - ml_recent.csv :
 - ml_recent_norefs.csv :

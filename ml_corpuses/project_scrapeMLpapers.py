@@ -150,6 +150,10 @@ ml_corpuses_noref.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/ml_co
 # More modern ML texts (2024) -- to incorporate updates in tech, which moves @ 1e6 MPH 
 # =============================================================================
 
+# Different approach here: rather than summarizing all the word in-between, here
+# are snapshot summaries of key papers week by week, written by an expert in the field,
+# from 2023-present! (Apr 4 2025)
+# https://github.com/dair-ai/ML-Papers-of-the-Week/tree/main?tab=readme-ov-file#top-ml-papers-of-the-week-january-1---january-7---2024
 
 list_ml_corpuses_noref[9]
 
@@ -159,7 +163,57 @@ list_ml_corpuses_noref[9]
 
 
 
+# =============================================================================
+# 
+# =============================================================================
+# note to self: now need to look into my purported methods... how to run that...
+'''
+https://programminghistorian.org/en/lessons/introduction-to-stylometry-with-python
+Excellent source -- 
+* Second Stylometric Test: Kilgariff’s Chi-Squared Method
+(note: while this is simpler than "Third Stylometric Test: John Burrows’ Delta Method (Advanced)", 
+ I think it is actually more applicable to what we are running here! than the delta method)
+    - Note: this implies that a dictionary of lists would be a better storage mechanism than a df! That's
+    a super easy conversion from list format especially, so maybe I should just pickle the list?
 
+https://fastdatascience.com/natural-language-processing/fast-stylometry-python-library/
+However, this library uses the Delta method and has some PCA analyses built in which I think
+would be nice visuals!! of how similar the various regulatory bodies are in space, compared to the ML
+corpuses (can set those as a "single author")
+
+Note: for each of these, make sure to output and visualize the top words from each corpus, ala
+word frequency that Karina is doing. (That way we will know what is *drivng* these results & it'll
+be a bit more interpretable.')
+
+Note: this is probably a semantic analysis, but could we compare the embeddings of key tokens 
+to see how similar they are between the bodies of text? e.g. 1) embedding of "machine learning"
+with Word2Vec, from the body of technical texts, then 2) doing that for the regulatory texts, grouped 
+by nation/region; then 3) calculating "distance" between those embeddings, and 4) as a demonstration:
+finding the "distance" from the same embedding generated over a *different* set of academic ML texts?
+    AJA!! https://sbert.net/docs/sentence_transformer/usage/semantic_textual_similarity.html
+    Semantic textual similarity
+    https://christianbernecker.medium.com/nlp-similarity-use-pretrained-word-embeddings-for-semantic-similarity-search-with-bert-4beaf7b6a148 ?
+    https://www.pingcap.com/article/top-10-tools-for-calculating-semantic-similarity/
+    
+Other useful sources/thoughts:
+https://www.reddit.com/r/MLQuestions/comments/t7k3gi/is_it_possible_to_compute_the_average_semantic/
+https://medium.com/@swarup.t/exploring-contextual-text-similarity-a-dive-into-machine-learning-techniques-3d477c88bf20
+https://datascience.stackexchange.com/questions/71512/nlp-simple-approach-to-identify-commonalities-in-text-comments-between-people
+https://medium.com/@evertongomede/exploring-the-depths-of-meaning-semantic-similarity-in-natural-language-processing-19281e58558e
+https://www.geeksforgeeks.org/different-techniques-for-sentence-semantic-similarity-in-nlp/#
+https://towardsdatascience.com/17-types-of-similarity-and-dissimilarity-measures-used-in-data-science-3eb914d2681/
+
+https://medium.com/@rahultiwari065/ultimate-guide-to-text-similarity-from-basics-to-advanced-applications-1492f82c0269
+    ** patterns and sequences between texts -- phrases?? -- Ratcliff-Obershelp Algorithm
+
+https://www.index.dev/blog/best-nlp-algorithms-to-get-document-similarity
+    Interesting ideas here -- esp. skip gram
+    
+stylo() in R! seems VERY useful!! and user-friendly
+https://guides.temple.edu/stylometryfordh/programs
+https://computationalstylistics.github.io/resources/
+
+'''
 # =============================================================================
 # end of file
 # =============================================================================
