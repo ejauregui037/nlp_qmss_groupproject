@@ -15,5 +15,4 @@ In analyses, I would propose that Set 1 & Set 2 should be used together.
 
 ### Most influential papers of 2024
 
-- ml_recent.csv :
-- ml_recent_norefs.csv :
+- ml_papersummaries.csv : Contains 'corpuses', where each row is a blurb about a "paper of the week" from 2024. 

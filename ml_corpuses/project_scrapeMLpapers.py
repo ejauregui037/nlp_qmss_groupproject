@@ -204,9 +204,8 @@ ml_papersummaries = pd.DataFrame(cleaned_texts1)
 ml_papersummaries.to_csv("/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_papersummaries.csv", index=False, encoding = "utf-8", errors = "replace")
 
 # =============================================================================
-# 
+# Potential methods for stylometry
 # =============================================================================
-# note to self: now need to look into my purported methods... how to run that...
 '''
 https://programminghistorian.org/en/lessons/introduction-to-stylometry-with-python
 Excellent source -- 
@@ -258,73 +257,3 @@ https://computationalstylistics.github.io/resources/
 # end of file
 # =============================================================================
 
-
-
-
-
-
-
-# Note: these are up to 2016. Also scrape PDFs for list of recent publications... **
-
-
-
-
-
-r = requests.get(pdf_links[1] )
-f = io.BytesIO(r.content)
-reader = PyPDF2.PdfReader(f)
-# Loop through all pages and extract the text
-all_contents = []
-for page_num in range(len(reader.pages)):  # Iterate over all pages
-    page = reader.pages[page_num]
-    text = page.extract_text()
-    text = text.split('\n')
-    text = " ".join(text)
-    all_contents.append(text)
-    
-len(all_contents) # 20 pages
-all_contents[13]
-
-# then I think we should clean this to...
-# a) exclude stopwords & punctuation?... but we CAN'T if we want to analyze syntax, etc
-# b) exclude numbers
-# Note: for syntax & semantics, really the ONLY thing I want to exclude that I feel strongly about are the refernces
-# But that is just... so annoying LOL
-
-all_contents_str = " ".join(all_contents)
-
-def cut_string_after_keyword(text, keyword):
-    """Cuts off a string after the first occurrence of a keyword, including the keyword.
-
-    Args:
-        text: The string to cut.
-        keyword: The keyword to search for.
-
-    Returns:
-        The string cut off after the keyword, or the original string if the keyword is not found.
-    """
-    try:
-      index = text.index(keyword)
-      return text[:index + len(keyword)]
-    except ValueError:
-        return text
-
-
-
-
-
-
-
-
-
-# now: scrape these for their content
-list_ml_corpuses = list()
-for link in pdf_links[0:1]:
-    result = requests.get(pdf_links[0])
-    pdf_response = requests.get(pdf_links[0], stream=True)
-    page_soup = soup(src, "lxml")
-    ml_texts = page_soup.get_text()
-    list_ml_corpuses.append(ml_texts)
-    
-# then turn this list into a df of corpuses...
-    
