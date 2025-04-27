@@ -19,3 +19,7 @@ syntactic structures to determine the cognitive load required for
 processing the text. This reflects the author's intended complexity 
 or simplicity in conveying ideas.
 '''
+
+# I don't really care about these results, personally 
+# I don't think this is important for legal documents; I care more about how correct
+# it is, rather than how "readable" it is
