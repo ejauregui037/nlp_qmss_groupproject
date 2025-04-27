@@ -156,17 +156,17 @@ def kilgariff_chisq(df_corp_auth):
                         / len(joint_corp)) 
         
     # Calculate a chi-squared distance by summing, over the n most common words, the squares of the differences between the actual numbers of tokens found in each author’s corpus and the expected numbers, divided by the expected numbers. 
-    '''
-    My approach: "What is the probability that the legal text could have been drawn from the ML corpus?"
-    Mathematically: sum( ((Ci-Ei)^2)/Ei ), where Ei is derived by getting the frequency in the joint ML corpus. 
-    I think that makes the most sense
-    '''
-    # question
-    '''
-    Question: should we be clearning out stop words? I feel like no, bc I want a sense for how they are using these words in tandem...
-    But then--doesn't that mean that maybe I should be extending this method to BIGRAMS and TRIGRAMS??
-    I COULD... (!)
-    '''
+        '''
+        My approach: "What is the probability that the legal text could have been drawn from the ML corpus?"
+        Mathematically: sum( ((Ci-Ei)^2)/Ei ), where Ei is derived by getting the frequency in the joint ML corpus. 
+        I think that makes the most sense
+        '''
+        # question
+        '''
+        Question: should we be cleaning out stop words? I feel like no, bc I want a sense for how they are using these words in tandem...
+        But then--doesn't that mean that maybe I should be extending this method to BIGRAMS and TRIGRAMS??
+        I COULD... (!)
+        '''
     # lower chi-sq = more similar; bigger chi-sq = lower p-value = less likely to have occurred 'by chance' [under the null dist/hypothesis that they arose from the same distribution/overall corpus]
         chisquared = 0
         for word, joint_count in most_common:
