@@ -15,3 +15,6 @@ Textual entailment:
 Paraphrase detection: 
     looks at whether two texts express the same idea in different ways.
 '''
+
+# This is a really interesting set of approaches, but I must define my 
+# research questions VERY specifically in order to make them useful

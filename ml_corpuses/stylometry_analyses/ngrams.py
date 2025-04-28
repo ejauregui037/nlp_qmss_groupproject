@@ -15,3 +15,14 @@ N-Grams:
     authors tend to link ideas together or phrase things in a 
     characteristic way.
 '''
+
+# Karina is already doing this in a basic Count way
+
+# Kilgariff chi-sq ngrams:
+
+# source kilgariff_chisq.py & run...
+    # # # 
+    #
+
+
+

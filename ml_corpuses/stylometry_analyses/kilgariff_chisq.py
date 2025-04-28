@@ -68,6 +68,7 @@ is working) & expected visualizations:
 # =============================================================================
 
 import pandas as pd
+import nltk
 
 # technical corpuses (ML)
 mlpapersummaries = pd.read_csv("~/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_papersummaries.csv")
@@ -77,7 +78,7 @@ mlcorps_noref = pd.read_csv("~/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupp
 # legal data
 legal_dat = pd.read_pickle("~/Downloads/cleaned_df.pkl") # trying out Haley's data -- change location
 
-# Prep: combine all of these texts into a single df, with "authors"
+# Prep # 1: combine all of these texts into a single df, with "authors"
 
 # less specific: "author"
 mlcorps_noref['author'] = "ml_technical"
@@ -126,11 +127,37 @@ version_2['corpuses'] = [corpus.lower() for corpus in version_2['corpuses']]
 version_3['corpuses'] = [corpus.lower() for corpus in version_3['corpuses']]
 version_4['corpuses'] = [corpus.lower() for corpus in version_4['corpuses']]
 
-# Now: create versions without stopwords
-version_1s = 
-version_2s = 
-version_3s = 
-version_4s = 
+# Prep # 2: create versions without stopwords
+
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+nltk.download('stopwords')
+nltk.download('punkt_tab')
+stop_words = set(stopwords.words('english'))
+import re
+# function to remove numbers & stopwords
+def clean_stopwords_numeric(string_in):
+    no_numstring = re.sub(r'\d+', '', string_in) # remove all numbers from the string
+    word_list = [word for word in word_tokenize(no_numstring) if word.lower() not in stop_words] # remove stopwords
+    return " ".join(word_list)
+# automate the cleaning process for each version df
+def update_version(version_df):
+    out_1 = version_df.copy()
+    out_1['corpuses'] = out_1['corpuses'].apply(clean_stopwords_numeric)
+    return out_1
+
+# run for each corpus in each df with "apply"
+version_1s = update_version(version_1)
+version_2s = update_version(version_2)
+version_3s = update_version(version_3)
+version_4s = update_version(version_4)
+
+# Prep # 3
+# Create versions of...
+# ngrams (1,2,3)
+# Sentences (!!!! I can't do this -- haley has removed the periods???? and I lowercased everything LOL so that makes it tricky. But maybe that's how I can identify sentences? if I undo the lowercasing?)
+# for each of the 
+
 
 # =============================================================================
 # 1. Kilgariff's Chi-Sq Method
@@ -159,8 +186,6 @@ Begin stylometry with those author designations.
 
 # Who are the authors we are analyzing?
 # I can just cite these in a loop, as the colum in the df
-
-import nltk
 
 # Calculate chisquared for each of the two candidate authors
 def kilgariff_chisq(df_corp_auth, ref_list, compar_grp, n_mostcomm, internals):
