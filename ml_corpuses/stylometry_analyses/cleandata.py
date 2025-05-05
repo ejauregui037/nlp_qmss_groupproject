@@ -190,13 +190,17 @@ version_3s = update_version(version_3n, clean_stopwords)
 version_4s = update_version(version_4n, clean_stopwords)
 
 # =============================================================================
-# Prep # 4: ngram versions (lowercase, numbers excluded but not stopwords)
+# Prep # 4: ngram versions (lowercase, numbers excluded but not stopwords) BUT ALSO: no punctuation/special characters!! VERY IMPORTANT FOR THE NGRAMS
 # =============================================================================
-from nltk.util import ngrams
+from nltk import ngrams, word_tokenize
 
 # create a list of ngrams -- 1,2,3
 def ngrams_in(string_in,ngrams_in):
     tokens = word_tokenize(string_in)
+    # Remove punctuation from tokens
+    import string
+    tokens = [token for token in tokens if token not in string.punctuation]
+    # now generate the ngrams
     grams_n = list(ngrams(tokens,ngrams_in)) # ngrams_in = 1 for unigram, 2 for bigram, etc...
     return grams_n
 def ngrams_custom(df_in, n_in):
@@ -218,8 +222,9 @@ version_4n123 = [ngrams_custom(version_4n, 1),
                  ngrams_custom(version_4n, 3)]
 
 # =============================================================================
-# Prep # 5: ngram versions (lowercase, numbers AND stopwords removed)
+# Prep # 5: ngram versions (lowercase, numbers AND stopwords removed) BUT ALSO: no punctuation/special characters!! VERY IMPORTANT FOR THE NGRAMS
 # =============================================================================
+
 version_1s123 = [ngrams_custom(version_1s, 1), 
                  ngrams_custom(version_1s, 2), 
                  ngrams_custom(version_1s, 3)]
@@ -319,7 +324,6 @@ keep_vars = {'version_1',
 for var in list(globals()):
     if var not in keep_vars and not var.startswith("__"):
         del globals()[var]
-
 
 
 
