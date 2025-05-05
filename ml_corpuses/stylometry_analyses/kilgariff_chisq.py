@@ -64,99 +64,42 @@ is working) & expected visualizations:
     # e.g. "if internals = True: {print X}"
 
 # =============================================================================
-# Load & prep data
+# Load prepped dataframes 
 # =============================================================================
+# import sys
+# sys.path.append("~/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/stylometry_analyses")
+# import cleandata # cleandata.py
+exec(open('/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/stylometry_analyses/cleandata.py').read())
+# takes a minute to run, but loads them all -- more reliable than trying to import repeatedly
+# this is R-type coding: source()
 
-import pandas as pd
-import nltk
+# =============================================================================
+# Select the dfs relevant to this script
+# =============================================================================
+# keep_vars = {'version_1', 
+#              'version_1c', "version_1cn", "version_1ct", 
+#              "version_1n", "version_1n123", # "123" is a list of dfs
+#              "version_1s", "version_1s123", # "123" is a list of dfs
+              
+#              'version_2', 
+#              'version_2c', "version_2cn", "version_2ct", 
+#              "version_2n", "version_2n123",
+#              "version_2s", "version_2s123",
+             
+#              'version_3', 
+#              'version_3c', "version_3cn", "version_3ct", 
+#              "version_3n", "version_3n123",
+#              "version_3s", "version_3s123",
+             
+#              'version_4', 
+#              'version_4c', "version_4cn", "version_4ct", 
+#              "version_4n", "version_4n123",
+#              "version_4s", "version_4s123"}
 
-# technical corpuses (ML)
-mlpapersummaries = pd.read_csv("~/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_papersummaries.csv")
-mlcorps = pd.read_csv("~/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_corpuses.csv")
-mlcorps_noref = pd.read_csv("~/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/ml_corpuses_noref.csv")
-
-# legal data
-legal_dat = pd.read_pickle("~/Downloads/cleaned_df.pkl") # trying out Haley's data -- change location
-
-# Prep # 1: combine all of these texts into a single df, with "authors"
-
-# less specific: "author"
-mlcorps_noref['author'] = "ml_technical"
-mlpapersummaries['author'] = "ml_technical"
-legal_dat['author'] = "legal"
-
-# more specific: "author1"
-mlcorps_noref['author1'] = "ml_published"
-mlpapersummaries['author1'] = "ml_2024"
-legal_dat['author1'] = legal_dat['region_label']
-
-# standardize column names for extracted text
-legal_dat = legal_dat.rename(columns={'Extracted Text': 'corpuses'})
-mlcorps_noref = mlcorps_noref.rename(columns={'0': 'corpuses'})
-mlpapersummaries = mlpapersummaries.rename(columns={'0': 'corpuses'})
-
-# Version 1: all ML together;  all legal together (same "author")
-version_1 = pd.concat([legal_dat[['corpuses','author']],
-                       mlcorps_noref[['corpuses','author']], 
-                       mlpapersummaries[['corpuses','author']] ])
-# Version 2: ML differs by published vs. more casual style & updated methods;  legal documents separated by governing body
-version_2 = pd.concat([legal_dat[['corpuses','author1']],
-                       mlcorps_noref[['corpuses','author1']], 
-                       mlpapersummaries[['corpuses','author1']] ])
-# Version 3: all ML together;  (!!!) legal documents separated by governing body
-to_delete = legal_dat.copy()
-to_delete['author'] = to_delete['author1'] # to enable pd.concat; must have same colname as other dfs
-version_3 = pd.concat([to_delete[['corpuses','author']],
-                       mlcorps_noref[['corpuses','author']], 
-                       mlpapersummaries[['corpuses','author']] ])
-
-# Version 3: (!!!) ML differs by published vs. more casual style & updated methods;  all legal together (same "author")
-to_delete = legal_dat.copy()
-to_delete['author1'] = to_delete['author'] # to enable pd.concat; must have same colname as other dfs
-version_4 = pd.concat([to_delete[['corpuses','author1']],
-                       mlcorps_noref[['corpuses','author1']], 
-                       mlpapersummaries[['corpuses','author1']] ])
-
-# rename columns for consistency
-version_2 = version_2.rename(columns={'author1': 'author'})
-version_4 = version_4.rename(columns={'author1': 'author'})
-
-# Lowercase the tokens so that the same word, capitalized or not, counts as one word
-version_1['corpuses'] = [corpus.lower() for corpus in version_1['corpuses']]
-version_2['corpuses'] = [corpus.lower() for corpus in version_2['corpuses']]
-version_3['corpuses'] = [corpus.lower() for corpus in version_3['corpuses']]
-version_4['corpuses'] = [corpus.lower() for corpus in version_4['corpuses']]
-
-# Prep # 2: create versions without stopwords
-
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-nltk.download('stopwords')
-nltk.download('punkt_tab')
-stop_words = set(stopwords.words('english'))
-import re
-# function to remove numbers & stopwords
-def clean_stopwords_numeric(string_in):
-    no_numstring = re.sub(r'\d+', '', string_in) # remove all numbers from the string
-    word_list = [word for word in word_tokenize(no_numstring) if word.lower() not in stop_words] # remove stopwords
-    return " ".join(word_list)
-# automate the cleaning process for each version df
-def update_version(version_df):
-    out_1 = version_df.copy()
-    out_1['corpuses'] = out_1['corpuses'].apply(clean_stopwords_numeric)
-    return out_1
-
-# run for each corpus in each df with "apply"
-version_1s = update_version(version_1)
-version_2s = update_version(version_2)
-version_3s = update_version(version_3)
-version_4s = update_version(version_4)
-
-# Prep # 3
-# Create versions of...
-# ngrams (1,2,3)
-# Sentences (!!!! I can't do this -- haley has removed the periods???? and I lowercased everything LOL so that makes it tricky. But maybe that's how I can identify sentences? if I undo the lowercasing?)
-# for each of the 
+# # Delete everything in globals() except for the ones you want to keep and system variables
+# for var in list(globals()):
+#     if var not in keep_vars and not var.startswith("__"):
+#         del globals()[var]
 
 
 # =============================================================================
@@ -187,6 +130,8 @@ Begin stylometry with those author designations.
 # Who are the authors we are analyzing?
 # I can just cite these in a loop, as the colum in the df
 
+import nltk
+
 # Calculate chisquared for each of the two candidate authors
 def kilgariff_chisq(df_corp_auth, ref_list, compar_grp, n_mostcomm, internals):
     '''
@@ -213,7 +158,7 @@ def kilgariff_chisq(df_corp_auth, ref_list, compar_grp, n_mostcomm, internals):
     refML_most_common = list(refML_freq_dist.most_common(n_mostcomm)) # n = 500; could be an input to the fxn
     
     if internals == True: 
-        print(refML_most_common[1:5]) # INTERNALS
+        print(refML_most_common[1:20]) # INTERNALS
         
     # make a joint corpus for each 'comparison' group of the legal
     compar_dist =  " ".join(df_corp_auth[df_corp_auth['author']==compar_grp]['corpuses'].tolist()) 
@@ -245,15 +190,6 @@ def kilgariff_chisq(df_corp_auth, ref_list, compar_grp, n_mostcomm, internals):
     return chisquared
     
 # =============================================================================
-# Generalized version of the fxn for NGRAMS
-# =============================================================================
-
-
-
-
-
-
-# =============================================================================
 # Apply to the legal corpora -- with & without stopwords
 # =============================================================================
 
@@ -262,41 +198,369 @@ def kilgariff_chisq(df_corp_auth, ref_list, compar_grp, n_mostcomm, internals):
     # # # 
     # 
 
-kilgariff_chisq(df_corp_auth = version_3, 
+# =============================================================================
+# 'version' ; not cleaned at all
+# =============================================================================
+
+EU_chisq = kilgariff_chisq(df_corp_auth = version_3,  # bad -- all the top words are stopwords
                 ref_list = 'ml_technical', 
                 compar_grp = 'EU', 
                 n_mostcomm = 500, 
                 internals = True)
 
-kilgariff_chisq(df_corp_auth = version_3, 
+UN_chisq = kilgariff_chisq(df_corp_auth = version_3, 
                 ref_list = 'ml_technical', 
                 compar_grp = 'UN', 
                 n_mostcomm = 500, 
                 internals = True)
 
-kilgariff_chisq(df_corp_auth = version_3, 
+US_chisq = kilgariff_chisq(df_corp_auth = version_3, 
                 ref_list = 'ml_technical', 
                 compar_grp = 'US', 
                 n_mostcomm = 500, 
                 internals = True) # MOST similar is UN, I believe!! smallest chi-sq value...
 
-# Now: compare to the different ML versions/regions
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
 
-# Now: apply to the versions without stopwords
+# =============================================================================
+# Without numbers
+# =============================================================================
 
-# RESULT: WHICH ARE MORE SIMILAR (RELATIVELY) TO THE TECHNICAL TEXTS--of EU/US/UN--AND WHICH ARE THEY MORE SIMILAR TO (causal/recent vs. published/old)
+EU_chisq = kilgariff_chisq(df_corp_auth = version_3n,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_technical', 
+                compar_grp = 'EU', 
+                n_mostcomm = 500, 
+                internals = True)
+
+UN_chisq = kilgariff_chisq(df_corp_auth = version_3n, 
+                ref_list = 'ml_technical', 
+                compar_grp = 'UN', 
+                n_mostcomm = 500, 
+                internals = True)
+
+US_chisq = kilgariff_chisq(df_corp_auth = version_3n, 
+                ref_list = 'ml_technical', 
+                compar_grp = 'US', 
+                n_mostcomm = 500, 
+                internals = True) # MOST similar is UN, I believe!! smallest chi-sq value...
+
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
 
 
 # =============================================================================
-# Applied to ngrams
+# Without stopwords and numbers
+# =============================================================================
+
+EU_chisq = kilgariff_chisq(df_corp_auth = version_3s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_technical', 
+                compar_grp = 'EU', 
+                n_mostcomm = 500, 
+                internals = True)
+
+UN_chisq = kilgariff_chisq(df_corp_auth = version_3s, 
+                ref_list = 'ml_technical', 
+                compar_grp = 'UN', 
+                n_mostcomm = 500, 
+                internals = True)
+
+US_chisq = kilgariff_chisq(df_corp_auth = version_3s, 
+                ref_list = 'ml_technical', 
+                compar_grp = 'US', 
+                n_mostcomm = 500, 
+                internals = True) # MOST similar is UN, I believe!! smallest chi-sq value...
+
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
+
+
+# =============================================================================
+# Without stopwords and numbers -- Compare the various legislative bodies to the two ML corpora
+# =============================================================================
+
+# EU 
+EU_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'EU', 
+                n_mostcomm = 500, 
+                internals = True)
+EU_chisq1 = kilgariff_chisq(df_corp_auth = version_2s,  
+                ref_list = 'ml_2024', 
+                compar_grp = 'EU', 
+                n_mostcomm = 500, 
+                internals = True)
+
+print("EU vs. ML published up to 2016: " + str(EU_chisq) + ", EU vs. ML2024: " + str(EU_chisq1))
+print("EU vs. ML published up to 2016: " + str(round(EU_chisq)) + ", EU vs. ML2024: " + str(round(EU_chisq1))) # curious -- I wonder why this is...
+
+# UN
+UN_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'UN', 
+                n_mostcomm = 500, 
+                internals = True)
+UN_chisq1 = kilgariff_chisq(df_corp_auth = version_2s,  
+                ref_list = 'ml_2024', 
+                compar_grp = 'UN', 
+                n_mostcomm = 500, 
+                internals = True)
+
+print("UN vs. ML published up to 2016: " + str(UN_chisq) + ", UN vs. ML2024: " + str(UN_chisq1))
+print("UN vs. ML published up to 2016: " + str(round(UN_chisq)) + ", UN vs. ML2024: " + str(round(UN_chisq1))) # curious -- I wonder why this is...
+
+
+# US
+US_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'US', 
+                n_mostcomm = 500, 
+                internals = True)
+US_chisq1 = kilgariff_chisq(df_corp_auth = version_2s,  
+                ref_list = 'ml_2024', 
+                compar_grp = 'US', 
+                n_mostcomm = 500, 
+                internals = True)
+
+print("US vs. ML published up to 2016: " + str(US_chisq) + ", US vs. ML2024: " + str(US_chisq1))
+print("US vs. ML published up to 2016: " + str(round(US_chisq)) + ", US vs. ML2024: " + str(round(US_chisq1))) # curious -- I wonder why this is...
+
+
+
+# =============================================================================
+# Without stopwords and numbers -- Compare the various legislative bodies to the 2024 ML blurbs SPECIFICALLY
+# =============================================================================
+
+# EU 
+EU_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_2024', 
+                compar_grp = 'EU', 
+                n_mostcomm = 500, 
+                internals = True)
+# UN 
+UN_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_2024', 
+                compar_grp = 'UN', 
+                n_mostcomm = 500, 
+                internals = True)
+# US 
+US_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_2024', 
+                compar_grp = 'US', 
+                n_mostcomm = 500, 
+                internals = True)
+
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
+
+# =============================================================================
+# Without stopwords and numbers -- Compare the various legislative bodies to the 2012-2016 published ML corpora SPECIFICALLY
+# =============================================================================
+# EU 
+EU_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'EU', 
+                n_mostcomm = 500, 
+                internals = True)
+# UN 
+UN_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'UN', 
+                n_mostcomm = 500, 
+                internals = True)
+# US 
+US_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'US', 
+                n_mostcomm = 500, 
+                internals = True)
+
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
+
+
+
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# Vary n (i.e. how many top words)
+# # =============================================================================
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# =============================================================================
 # =============================================================================
 
 
-# Now: compare to the different ML versions/regions
+# =============================================================================
+# Without stopwords and numbers
+# =============================================================================
 
-# Now: apply to the versions without stopwords
+EU_chisq = kilgariff_chisq(df_corp_auth = version_3s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_technical', 
+                compar_grp = 'EU', 
+                n_mostcomm = 50, 
+                internals = True)
+
+UN_chisq = kilgariff_chisq(df_corp_auth = version_3s, 
+                ref_list = 'ml_technical', 
+                compar_grp = 'UN', 
+                n_mostcomm = 50, 
+                internals = True)
+
+US_chisq = kilgariff_chisq(df_corp_auth = version_3s, 
+                ref_list = 'ml_technical', 
+                compar_grp = 'US', 
+                n_mostcomm = 50, 
+                internals = True) # MOST similar is UN, I believe!! smallest chi-sq value...
+
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
+
+
+# =============================================================================
+# Without stopwords and numbers -- Compare the various legislative bodies to the two ML corpora
+# =============================================================================
+
+# EU 
+EU_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'EU', 
+                n_mostcomm = 50, 
+                internals = True)
+EU_chisq1 = kilgariff_chisq(df_corp_auth = version_2s,  
+                ref_list = 'ml_2024', 
+                compar_grp = 'EU', 
+                n_mostcomm = 50, 
+                internals = True)
+
+print("EU vs. ML published up to 2016: " + str(EU_chisq) + ", EU vs. ML2024: " + str(EU_chisq1))
+print("EU vs. ML published up to 2016: " + str(round(EU_chisq)) + ", EU vs. ML2024: " + str(round(EU_chisq1))) # curious -- I wonder why this is...
+
+# UN
+UN_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'UN', 
+                n_mostcomm = 50, 
+                internals = True)
+UN_chisq1 = kilgariff_chisq(df_corp_auth = version_2s,  
+                ref_list = 'ml_2024', 
+                compar_grp = 'UN', 
+                n_mostcomm = 50, 
+                internals = True)
+
+print("UN vs. ML published up to 2016: " + str(UN_chisq) + ", UN vs. ML2024: " + str(UN_chisq1))
+print("UN vs. ML published up to 2016: " + str(round(UN_chisq)) + ", UN vs. ML2024: " + str(round(UN_chisq1))) # curious -- I wonder why this is...
+
+
+# US
+US_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'US', 
+                n_mostcomm = 50, 
+                internals = True)
+US_chisq1 = kilgariff_chisq(df_corp_auth = version_2s,  
+                ref_list = 'ml_2024', 
+                compar_grp = 'US', 
+                n_mostcomm = 50, 
+                internals = True)
+
+print("US vs. ML published up to 2016: " + str(US_chisq) + ", US vs. ML2024: " + str(US_chisq1))
+print("US vs. ML published up to 2016: " + str(round(US_chisq)) + ", US vs. ML2024: " + str(round(US_chisq1))) # curious -- I wonder why this is...
+
+
+# =============================================================================
+# Without stopwords and numbers -- Compare the various legislative bodies to the 2012-2016 published ML corpora SPECIFICALLY
+# =============================================================================
+
+# EU 
+EU_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_2024', 
+                compar_grp = 'EU', 
+                n_mostcomm = 50, 
+                internals = True)
+# UN 
+UN_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_2024', 
+                compar_grp = 'UN', 
+                n_mostcomm = 50, 
+                internals = True)
+# US 
+US_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_2024', 
+                compar_grp = 'US', 
+                n_mostcomm = 50, 
+                internals = True)
+
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
+
+# =============================================================================
+# Without stopwords and numbers -- Compare the various legislative bodies to the 2024 ML blurbs SPECIFICALLY
+# =============================================================================
+
+# EU 
+EU_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'EU', 
+                n_mostcomm = 50, 
+                internals = True)
+# UN 
+UN_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'UN', 
+                n_mostcomm = 50, 
+                internals = True)
+# US 
+US_chisq = kilgariff_chisq(df_corp_auth = version_2s,  # bad -- all the top words are symbols! but since we have 500 I feel like these can't be that much of an influence?
+                ref_list = 'ml_published', 
+                compar_grp = 'US', 
+                n_mostcomm = 50, 
+                internals = True)
+
+print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
+print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # RESULT: WHICH ARE MORE SIMILAR (RELATIVELY) TO THE TECHNICAL TEXTS--of EU/US/UN--AND WHICH ARE THEY MORE SIMILAR TO (causal/recent vs. published/old)
+
+'''
+'''
 
 
 
