@@ -27,7 +27,7 @@ For us: are they consistent in how they refer to...
 '''
 
 '''
-NLP approaches:
+NLP approaches: 
 
 ChatGPT said:
 Evaluating cohesive harmony for semantic consistency using NLP methods involves 
@@ -47,20 +47,14 @@ are consistent in meaning. For example, if "AI" and "artificial intelligence"
 are used in different parts of the text, you can measure how close these terms 
 are in the embedding space. If they are close, it suggests lexical cohesion 
 is maintained.
+    Karina
 
 Similarity Score: Measure the cosine similarity between the vector 
 representations of key terms. If terms that refer to the same concept 
 (e.g., "AI," "machine learning," "deep learning") have a high similarity
  score, you can conclude that the text is semantically consistent in its 
  lexical choices.
-
-Semantic Role Labeling (SRL): SRL helps identify the relationships between 
-words in a sentence, such as the action and its participants. This can help 
-determine if the core concepts in a sentence are consistently used with the
- same roles throughout the text. For example, if "climate change" is the 
- subject of a sentence, it should consistently appear in similar syntactic
- roles across the text (e.g., as the subject of statements about global 
-                        warming or carbon emissions).
+     Nina
 
 2. Named Entity Recognition (NER) and Entity Disambiguation
 Named Entity Recognition (NER) is an essential technique for identifying and 
@@ -75,15 +69,7 @@ are referred to throughout the corpus. Ensuring that the same entity is always
 recognized and referred to correctly (without mixing it with other similar
                                       terms or introducing contradictions) 
 is crucial for semantic consistency.
-
-Entity Disambiguation: Once entities are recognized, they need to be 
-disambiguated (i.e., determining which entity a term refers to). 
-For example, if "apple" appears in the text, we need to determine whether 
-it refers to the fruit or the tech company. Tools like ELMo (Embeddings 
-                                                             from Language Models) 
-or BERT can help disambiguate these references. Ensuring that the same concept 
-is consistently identified and not confused with unrelated entities helps 
-maintain semantic consistency.
+    ******** --- ME ---- *********
 
 3. Coreference Resolution
 Coreference resolution is a process that determines when different phrases 
@@ -104,7 +90,8 @@ Consistency of Coreference Chains: Evaluate whether coreference chains are
  of the text and then suddenly referred to as "the technology" or "the system" 
  without explanation, it might indicate a lack of cohesive harmony in terms of
  consistent reference.
-
+    ******** --- ME ---- *********
+    
 4. Topic Modeling for Semantic Consistency
 Topic modeling is an unsupervised technique that can help identify the main 
 themes or topics within a text or corpus. Using techniques like Latent Dirichle
@@ -190,5 +177,46 @@ maintains semantic consistency and cohesive harmony across different sections,
 
 '''
 
+# =============================================================================
+# Load prepped dataframes 
+# =============================================================================
+# import sys
+# sys.path.append("~/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/stylometry_analyses")
+# import cleandata # cleandata.py
+exec(open('/Users/elenafj/Desktop/Columbia/courses/NLP_QMSS/nlp_qmss_groupproject/ml_corpuses/stylometry_analyses/cleandata.py').read())
+# takes a minute to run, but loads them all -- more reliable than trying to import repeatedly
+# this is R-type coding: source()
+
+# =============================================================================
+# Select the dfs relevant to this script
+# =============================================================================
+# keep_vars = {'version_1', 
+#              'version_1c', "version_1cn", "version_1ct", 
+#              "version_1n", "version_1n123", # "123" is a list of dfs
+#              "version_1s", "version_1s123", # "123" is a list of dfs
+              
+#              'version_2', 
+#              'version_2c', "version_2cn", "version_2ct", 
+#              "version_2n", "version_2n123",
+#              "version_2s", "version_2s123",
+             
+#              'version_3', 
+#              'version_3c', "version_3cn", "version_3ct", 
+#              "version_3n", "version_3n123",
+#              "version_3s", "version_3s123",
+             
+#              'version_4', 
+#              'version_4c', "version_4cn", "version_4ct", 
+#              "version_4n", "version_4n123",
+#              "version_4s", "version_4s123"}
+
+# # Delete everything in globals() except for the ones you want to keep and system variables
+# for var in list(globals()):
+#     if var not in keep_vars and not var.startswith("__"):
+#         del globals()[var]
+
+# =============================================================================
+# 
+# =============================================================================
 
 
