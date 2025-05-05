@@ -278,7 +278,7 @@ print("US vs. ML published up to 2016: " + str(round(US_chisq)) + ", US vs. ML20
 
 
 # =============================================================================
-# Without stopwords and numbers -- Compare the various legislative bodies to the 2012-2016 published ML corpora SPECIFICALLY
+# Without stopwords and numbers -- Compare the various legislative bodies to the 2024 blurbs published ML corpora SPECIFICALLY
 # =============================================================================
 
 # EU 
@@ -409,9 +409,8 @@ US_chisq1 = kilgariff_chisq(df_corp_auth = version_2s_bigrams,
 print("US vs. ML published up to 2016: " + str(US_chisq) + ", US vs. ML2024: " + str(US_chisq1))
 print("US vs. ML published up to 2016: " + str(round(US_chisq)) + ", US vs. ML2024: " + str(round(US_chisq1))) # curious -- I wonder why this is...
 
-
 # =============================================================================
-# Without stopwords and numbers -- Compare the various legislative bodies to the 2012-2016 published ML corpora SPECIFICALLY
+# Without stopwords and numbers -- Compare the various legislative bodies to the 2024 ML blurbs SPECIFICALLY
 # =============================================================================
 
 # EU 
@@ -436,8 +435,9 @@ US_chisq = kilgariff_chisq(df_corp_auth = version_2s_bigrams,  # bad -- all the 
 print("EU: " + str(EU_chisq) + ", UN: " +  str(UN_chisq) +  ", US: " + str(US_chisq))
 print("EU: " + str(round(EU_chisq)) + ", UN: " +  str(round(UN_chisq)) +  ", US: " + str(round(US_chisq)))
 
+
 # =============================================================================
-# Without stopwords and numbers -- Compare the various legislative bodies to the 2024 ML blurbs SPECIFICALLY
+# Without stopwords and numbers -- Compare the various legislative bodies to the 2012-2016 published ML corpora SPECIFICALLY
 # =============================================================================
 
 # EU 
